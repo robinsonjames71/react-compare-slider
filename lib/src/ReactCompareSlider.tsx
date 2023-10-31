@@ -82,9 +82,7 @@ export const ReactCompareSlider = forwardRef<
           return;
         }
 
-        const pixelPosition = portrait
-          ? y
-          : x
+        const pixelPosition = portrait ? y : x;
 
         /** Next position as percentage. */
         const nextPosition = Math.min(
@@ -152,7 +150,7 @@ export const ReactCompareSlider = forwardRef<
     /** Handle mouse/touch move. */
     const handlePointerMove = useCallback(
       function moveCall(ev: PointerEvent) {
-        updateInternalPosition({ isOffset: true, x: ev.offsetX, y: ev.offsetY });
+        updateInternalPosition({ x: ev.offsetX, y: ev.offsetY });
         setCanTransition(false);
       },
       [updateInternalPosition],
