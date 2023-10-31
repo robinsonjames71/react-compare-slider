@@ -21,8 +21,6 @@ interface UpdateInternalPositionProps {
   x: number;
   /** Y coordinate to update to (portrait). */
   y: number;
-  /** Whether to calculate using page X and Y offsets (required for pointer events). */
-  isOffset?: boolean;
 }
 
 const EVENT_PASSIVE_PARAMS = { capture: false, passive: true };
@@ -73,11 +71,11 @@ export const ReactCompareSlider = forwardRef<
 
     /** Sync the internal position and trigger position change callback if defined. */
     const updateInternalPosition = useCallback(
-      function updateInternal({ x, y, isOffset }: UpdateInternalPositionProps) {
+      function updateInternal({ x, y }: UpdateInternalPositionProps) {
         const rootElement = rootContainerRef.current as HTMLDivElement;
         const handleElement = handleContainerRef.current as HTMLButtonElement;
         const clipElement = clipContainerRef.current as HTMLDivElement;
-        const { width, height, left, top } = rootElement.getBoundingClientRect();
+        const { width, height } = rootElement.getBoundingClientRect();
 
         // Early out when component has zero bounds.
         if (width === 0 || height === 0) {
@@ -85,8 +83,8 @@ export const ReactCompareSlider = forwardRef<
         }
 
         const pixelPosition = portrait
-          ? y - (isOffset ? top - window.scrollY : 0)
-          : x - (isOffset ? left - window.scrollX : 0);
+          ? y
+          : x
 
         /** Next position as percentage. */
         const nextPosition = Math.min(
@@ -144,7 +142,7 @@ export const ReactCompareSlider = forwardRef<
         // Only handle left mouse button (touch events also use 0).
         if (disabled || ev.button !== 0) return;
 
-        updateInternalPosition({ isOffset: true, x: ev.pageX, y: ev.pageY });
+        updateInternalPosition({ x: ev.offsetX, y: ev.offsetY });
         setIsDragging(true);
         setCanTransition(true);
       },
@@ -154,7 +152,7 @@ export const ReactCompareSlider = forwardRef<
     /** Handle mouse/touch move. */
     const handlePointerMove = useCallback(
       function moveCall(ev: PointerEvent) {
-        updateInternalPosition({ isOffset: true, x: ev.pageX, y: ev.pageY });
+        updateInternalPosition({ isOffset: true, x: ev.offsetX, y: ev.offsetY });
         setCanTransition(false);
       },
       [updateInternalPosition],
